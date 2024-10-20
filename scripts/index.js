@@ -12,7 +12,7 @@ function createCard(link, title, deleteHandler) {
   titleElement.textContent = title;
 
   let deleteButton = cardElement.querySelector(".card__delete-button");
-  deleteButton.addEventListener("click", onDelete)
+  deleteButton.addEventListener("click", deleteHandler)
 
   return cardElement;
 }
