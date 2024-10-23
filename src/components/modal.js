@@ -1,13 +1,29 @@
 let activeModal;
+let activeExtCloseHandler;
 
-function escKeyHandler(evt, extCloseHandler){
+const modlas = document.querySelectorAll(".popup")
+
+function initModals(modals){
+  modals.forEach((modal) => {
+    modal.addEventListener("mousedown", (evt) => {
+      if (evt.target.classList.contains("popup_is-opened")) {
+        closeModal(modal);
+      }
+      if (evt.target.classList.contains("popup__close")) {
+        closeModal(modal);
+      }
+    })
+  })
+}
+
+function escKeyHandler(evt){
   if (evt.key === "Escape") {
-    closeModal(activeModal, extCloseHandler);
+    closeModal(activeModal);
   }
 }
 
-export function closeModal(modal, extCloseHandler){
-  if (extCloseHandler) extCloseHandler();
+export function closeModal(modal){
+  if (activeExtCloseHandler) activeExtCloseHandler();
   modal.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", escKeyHandler);
 }
@@ -15,14 +31,8 @@ export function closeModal(modal, extCloseHandler){
 export function openModal(modal, extCloseHandler){
   activeModal = modal;
   activeModal.classList.add("popup_is-opened");
-
-  activeModal.addEventListener("click", (evt) => {
-    if (evt.target === activeModal)
-    closeModal(activeModal, extCloseHandler);
-  })
-
-  const closeButton = activeModal.querySelector(".popup__close")
-  closeButton.addEventListener("click", (evt) => closeModal(activeModal, extCloseHandler))
-
-  document.addEventListener("keydown", (evt) => escKeyHandler(evt, extCloseHandler))
+  activeExtCloseHandler = extCloseHandler;
+  document.addEventListener("keydown", escKeyHandler)
 }
+
+initModals(modlas)
