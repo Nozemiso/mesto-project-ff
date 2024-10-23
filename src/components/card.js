@@ -5,13 +5,17 @@ function deleteCard(evt) {
   card.remove();
 }
 
-export function createCard({link, title, likeHandler, selectHandler }) {
+function likeCard(evt) {
+  evt.target.classList.toggle("card__like-button_is-active")
+}
+
+export function createCard({link, title, likeHandler=likeCard, selectHandler }) {
   const cardElement = cardTemplate.querySelector(".places__item").cloneNode(true);
   const imageElement = cardElement.querySelector(".card__image");
   imageElement.setAttribute("src", link);
   imageElement.setAttribute("alt", title);
 
-  imageElement.addEventListener("click", selectHandler);
+  imageElement.addEventListener("click", () => selectHandler(link, title));
 
   const titleElement = cardElement.querySelector(".card__title");
   titleElement.textContent = title;
