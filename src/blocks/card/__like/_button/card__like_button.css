@@ -1,8 +1,9 @@
-.card__like-button {
+.card__like_button {
   width: 21px;
   height: 18px;
-  background: transparent url('../../../images/like-inactive.svg') no-repeat;
-  
+  background: transparent url('../../../../images/like-inactive.svg') no-repeat;
+
+  display: block;
   background-size: 21px 18px;
   border: none;
   cursor: pointer;
@@ -15,6 +16,6 @@
   transition: 0.3s;
 }
 
-.card__like-button:hover {
+.card__like_button:hover {
   opacity: 0.6;
 }
