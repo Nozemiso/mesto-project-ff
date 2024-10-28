@@ -39,7 +39,7 @@ const profileEditForm = document.forms["edit-profile"]
 const profileNameInput = profileEditForm.elements["name"];
 const profileJobInput = profileEditForm.elements["description"]
 
-function fillProfileInputs() {s
+function fillProfileInputs() {
   profileNameInput.value = profileNameElement.textContent;
   profileJobInput.value = profileJobElement.textContent;
 }
