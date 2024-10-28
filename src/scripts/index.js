@@ -1,15 +1,25 @@
 import { createCardElement } from '../components/card.js';
 
 import { openModal, closeModal, initModals } from '../components/modal.js';
-import { validateForm, enableValidation } from './validation.js';
+import { validateForm, enableValidation, clearValidation } from '../components/validation.js';
 
-import { getCards, getUser, updateUser, createCard, updateAvatar } from './api.js';
+import { getCards, getUser, updateUser, createCard, updateAvatar } from '../components/api.js';
+
+const validationSelectors = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inputErrorSelector: ".popup__input_error",
+  inputContainerSelector: ".popup__input_container",
+}
 
 //Карточки
 const imageModal = document.querySelector(".popup_type_image");
 const imageModalPicture = imageModal.querySelector(".popup__image");
 const imageModalTitle = imageModal.querySelector(".popup__caption");
-export let cards;
+
+let cards;
+
 function selectCard(link, title) {
   imageModalPicture.setAttribute("src", link);
   imageModalPicture.setAttribute("alt", title);
@@ -20,13 +30,19 @@ function selectCard(link, title) {
 const cardContainerElement = document.querySelector(".places__list");
 
 function renderCard(card, method = "prepend"){
-  const cardElement = createCardElement(card, selectCard);
+  const cardElement = createCardElement(card, selectCard, userData._id);
   cardContainerElement[method](cardElement);
 }
 
 function renderCards(cards) {
   cardContainerElement.innerHTML = "";
   cards.forEach((card) => renderCard(card, "append"));
+}
+
+function initCardList() {
+  return getCards().then((res) => {
+    cards = res;
+  })
 }
 
 //Профиль
@@ -46,26 +62,25 @@ function fillProfileInputs() {
 
 function submitProfileEditForm(evt) {
   evt.preventDefault();
-  displayLoading(evt.target)
+  displayLoading(evt.target);
   updateUser(profileNameInput.value, profileJobInput.value)
   .then((res) => {
     userData = res;
     renderProfile()
-  })
-  .then(
     closeModal(profileEditModal)
-  )
-  .finally(removeLoading(evt.target))
+    removeLoading(evt.target)
+  })
   .catch((err) => {
     console.log(err);
-  });
+    removeLoading(evt.target)
+  })
 }
 profileEditForm.addEventListener("submit", submitProfileEditForm)
 
 const profileEditModal = document.querySelector(".popup_type_edit");
 profileEditButton.addEventListener("click", () => {
   fillProfileInputs();
-  validateForm(profileEditForm);
+  clearValidation(profileEditForm, validationSelectors);
   openModal(profileEditModal);
 });
 
@@ -77,28 +92,28 @@ const addPlaceLinkInput = addPlaceForm["link"];
 
 function submitAddPlaceForm(evt) {
   evt.preventDefault();
-  displayLoading(evt.target);
   const newCard = {
     name: addPlaceNameInput.value,
     link: addPlaceLinkInput.value,
   }
-  evt.target.reset()
 
+  displayLoading(evt.target);
   createCard(newCard.name, newCard.link)
   .then((card) =>{
-    cards[card._id] = card
-    closeModal(addPlaceModal)
+    evt.target.reset();
+    closeModal(addPlaceModal);
     renderCard(card);
+    removeLoading(evt.target)
   })
-  .finally(removeLoading(evt.target))
   .catch((err) => {
     console.log(err);
+    removeLoading(evt.target)
   });
 }
 
 const addPlaceModal = document.querySelector(".popup_type_new-card");
 addPlaceButton.addEventListener("click", () => {
-  validateForm(addPlaceForm);
+  clearValidation(addPlaceForm, validationSelectors);
   openModal(addPlaceModal);
 });
 
@@ -111,6 +126,7 @@ const profilePic = document.querySelector(".profile__image")
 const avatarUpdateForm = document.forms["edit-avatar"]
 
 profilePic.addEventListener('click', () => {
+  clearValidation(avatarUpdateForm, validationSelectors)
   openModal(avatarUpdateModal)
 })
 
@@ -120,19 +136,15 @@ avatarUpdateForm.addEventListener("submit", (evt) => {
   updateAvatar(evt.target.elements["link"].value)
   .then((res) => {
     userData = res;
-    renderProfile()
+    renderProfile();
+    avatarUpdateForm.reset();
+    closeModal(avatarUpdateModal);
+    removeLoading(evt.target)
   })
-  .then(closeModal(avatarUpdateModal))
-  .finally(removeLoading(evt.target))
   .catch((err) => {
     console.log(err);
+    removeLoading(evt.target);
   });
-})
-
-window.addEventListener("load", () => {
-  profileEditModal.classList.add("popup_is-animated");
-  addPlaceModal.classList.add("popup_is-animated");
-  imageModal.classList.add("popup_is-animated");
 })
 
 function renderProfile() {
@@ -149,27 +161,16 @@ function initProfile() {
 }
 
 function initPage() {
-  enableValidation({
-    formSelector: ".popup__form",
-    inputSelector: ".popup__input",
-    submitButtonSelector: ".popup__button",
-    inputErrorSelector: ".popup__input_error",
-})
+  enableValidation(validationSelectors)
   initModals([imageModal, addPlaceModal, profileEditModal, avatarUpdateModal])
 
-  const initialCardsPromise = getCards()
-  .then((cardList) => {
-    cards = {};
-    cardList.forEach((card) => {
-      cards[card._id] = Object.assign(card)
-    })
+  Promise.all([initCardList(), initProfile()]).
+  then(() => {
+    renderCards(Object.values(cards))
+    renderProfile()
   })
-  .catch((err) => {
-    console.log(err);
-  });
+  .catch(console.log)
 
-  const initProfilePromise = initProfile().catch(console.log)
-  Promise.all([initialCardsPromise, initProfilePromise]).then(() => renderCards(Object.values(cards))).catch(console.log)
 }
 
 function displayLoading(form) {

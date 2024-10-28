@@ -1,5 +1,3 @@
-let activeModal;
-
 export function initModals(modals){
   modals.forEach((modal) => {
     modal.addEventListener("mousedown", (evt) => {
@@ -14,6 +12,7 @@ export function initModals(modals){
 }
 
 function escKeyHandler(evt){
+  const activeModal = document.querySelector(".popup_is-opened")
   if (evt.key === "Escape") {
     closeModal(activeModal);
   }
@@ -25,7 +24,6 @@ export function closeModal(modal){
 }
 
 export function openModal(modal){
-  activeModal = modal;
-  activeModal.classList.add("popup_is-opened");
+  modal.classList.add("popup_is-opened");
   document.addEventListener("keydown", escKeyHandler)
 }
