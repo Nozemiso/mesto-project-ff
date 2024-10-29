@@ -1,10 +1,3 @@
-function checkFormValid(form){
-  const formInputElements = Array.from(form.querySelectorAll(".popup__input"))
-  return formInputElements.every((inputElement) => {
-    return inputElement.validity.valid
-  })
-}
-
 export function hasInvalidInput(inputList){
   return inputList.some((inputElement) => {
     return !inputElement.validity.valid;
@@ -20,23 +13,33 @@ function toggleButton(inputList, buttonElement) {
 }
 
 function validateInput(input, selectors){
+  if (input.validity.valid) clearInputError(input, selectors);
+  else showInputError(input, selectors)
+}
 
+function showInputError(input, selectors){
   const inputContainerElement = input.closest(".popup__input_container");
-  const errorElement = inputContainerElement.querySelector(selectors.inputErrorSelector)
-
+  const errorElement = inputContainerElement.querySelector(selectors.inputErrorSelector);
   if (!input.validity.patternMismatch) {
     errorElement.textContent = input.validationMessage
   } else {
     errorElement.textContent = input.getAttribute("data-pattern-messaage");
   }
+  input.classList.add(selectors.inputInvalidClass);
+}
+
+function clearInputError(input, selectors){
+  const inputContainerElement = input.closest(".popup__input_container");
+  const errorElement = inputContainerElement.querySelector(selectors.inputErrorSelector);
+  errorElement.textContent = ""
+  input.classList.remove(selectors.inputInvalidClass);
 }
 
 export function clearValidation(form, selectors){
-    const formErrors = Array.from(form.querySelectorAll(selectors.inputErrorSelector));
     const inputList = Array.from(form.querySelectorAll(selectors.inputSelector));
     const buttonElement = form.querySelector(selectors.submitButtonSelector);
-    formErrors.forEach((errorElement) => {
-      errorElement.textContent = ""
+    inputList.forEach((inputElement) => {
+      clearInputError(inputElement, selectors)
     });
     toggleButton(inputList, buttonElement);
 }

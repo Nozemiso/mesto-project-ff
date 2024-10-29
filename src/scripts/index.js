@@ -11,6 +11,7 @@ const validationSelectors = {
   submitButtonSelector: ".popup__button",
   inputErrorSelector: ".popup__input_error",
   inputContainerSelector: ".popup__input_container",
+  inputInvalidClass: "popup__input-invalid"
 }
 
 //Карточки
@@ -68,12 +69,9 @@ function submitProfileEditForm(evt) {
     userData = res;
     renderProfile()
     closeModal(profileEditModal)
-    removeLoading(evt.target)
   })
-  .catch((err) => {
-    console.log(err);
-    removeLoading(evt.target)
-  })
+  .catch((err) => { console.log(err);})
+  .finally(() => {removeLoading(evt.target)});
 }
 profileEditForm.addEventListener("submit", submitProfileEditForm)
 
@@ -103,12 +101,9 @@ function submitAddPlaceForm(evt) {
     evt.target.reset();
     closeModal(addPlaceModal);
     renderCard(card);
-    removeLoading(evt.target)
   })
-  .catch((err) => {
-    console.log(err);
-    removeLoading(evt.target)
-  });
+  .catch((err) => { console.log(err);})
+  .finally(() => {removeLoading(evt.target)});
 }
 
 const addPlaceModal = document.querySelector(".popup_type_new-card");
@@ -139,12 +134,9 @@ avatarUpdateForm.addEventListener("submit", (evt) => {
     renderProfile();
     avatarUpdateForm.reset();
     closeModal(avatarUpdateModal);
-    removeLoading(evt.target)
   })
-  .catch((err) => {
-    console.log(err);
-    removeLoading(evt.target);
-  });
+  .catch((err) => { console.log(err);})
+  .finally(() => {removeLoading(evt.target)});
 })
 
 function renderProfile() {

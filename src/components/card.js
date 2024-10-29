@@ -5,8 +5,8 @@ const cardTemplate = document.querySelector("#card-template").content;
 function deleteCardHandler(evt, cardId) {
   const card = evt.target.closest(".places__item");
   deleteCard(cardId)
+  .then(() => {card.remove()})
   .catch(console.log)
-  .then(card.remove());
 }
 
 function likeButtonHandler(evt, cardId){

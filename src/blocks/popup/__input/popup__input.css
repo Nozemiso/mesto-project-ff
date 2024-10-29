@@ -13,10 +13,6 @@
   position: relative;
 }
 
-.popup__input:invalid {
-  border-bottom: 1px solid #F00;
-}
-
 .popup__input:last-of-type {
   margin-bottom: 0;
 }
