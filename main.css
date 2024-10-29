@@ -888,6 +888,10 @@ template {
   color: #F00;
 }
 
+.popup__input-invalid {
+  border-bottom: 1px solid #F00;
+}
+
 .popup__input {
   width: 100%;
   height: 47px;
@@ -901,10 +905,6 @@ template {
   position: relative;
 }
 
-.popup__input:invalid {
-  border-bottom: 1px solid #F00;
-}
-
 .popup__input:last-of-type {
   margin-bottom: 0;
 }
@@ -914,6 +914,10 @@ template {
     font-size: 12px;
     line-height: 15px;
   }
+}
+
+.popup__input-invalid {
+  border-bottom: 1px solid #F00;
 }
 
 .popup__button {
